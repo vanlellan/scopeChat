@@ -27,8 +27,12 @@ class message1:
 	self.h = 10
         self.w = 90
 
-        self.text_display = tk.Text(self.master, height=self.h, width=self.w)
+        self.scrollbar = tk.Scrollbar(self.master)
+        self.scrollbar.pack( side = tk.RIGHT, fill='y')
+
+        self.text_display = tk.Text(self.master, wrap=tk.WORD, height=self.h, width=self.w, yscrollcommand=self.scrollbar.set)
         self.text_display.pack(fill="both", expand=True)
+        self.scrollbar.config(command=self.text_display.yview)
 
         self.text_input = tk.Entry(self.master)
         self.text_input.bind("<Return>", self.send_text)
@@ -45,13 +49,14 @@ class message1:
 
     def show_text(self):
         self.text_display.insert(tk.END, self.recent_message+'\n')
+        self.text_display.see(tk.END)
         self.num_messages += 1
-        while self.num_messages > self.h:
-            deleted = ''
-            while deleted != '\n':
-                deleted = self.text_display.get('0.0')
-                self.text_display.delete('0.0')
-            self.num_messages -= 1
+      #  while self.num_messages > self.h:
+      #      deleted = ''
+      #      while deleted != '\n':
+      #          deleted = self.text_display.get('0.0')
+      #          self.text_display.delete('0.0')
+      #      self.num_messages -= 1
         
 
 root = tk.Tk()
