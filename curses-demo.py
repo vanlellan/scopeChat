@@ -1,10 +1,27 @@
 import sys,os
 import curses
+import threading
+import time
+import Queue
+
+kList = [0,]	#this should definitely be replaced by a queue
+
+def input_catcher(aStdscr):
+    global kList
+    while True:
+        # Wait for next input
+        k = aStdscr.getch()
+        kList.append(k)
+        time.sleep(0.01)
+        if k == ord('q'):
+            break
+        
 
 def draw_menu(stdscr):
-    k = 0
+    global kList
     cursor_x = 0
     cursor_y = 0
+    m = 0
 
     # Clear and refresh the screen for a blank canvas
     stdscr.clear()
@@ -16,14 +33,30 @@ def draw_menu(stdscr):
     curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
     curses.init_pair(3, curses.COLOR_BLACK, curses.COLOR_WHITE)
 
-    # Loop where k is the last character pressed
-    while (k != ord('q')):
+    #Start thread for input catcher
+    threading.Thread(target=input_catcher, args=(stdscr,)).start()
 
+    histList = []
+    tempString = ''
+
+    # Loop where k is the last character pressed
+    while True:
+
+        time.sleep(0.01)
+        if len(kList) > 0:
+            k = kList.pop(0)
+        else:
+            k = 0
+    
         # Initialization
         stdscr.clear()
         height, width = stdscr.getmaxyx()
 
-        if k == curses.KEY_DOWN:
+        m += 1
+
+        if k == ord('q'):
+            break
+        elif k == curses.KEY_DOWN:
             cursor_y = cursor_y + 1
         elif k == curses.KEY_UP:
             cursor_y = cursor_y - 1
@@ -31,6 +64,11 @@ def draw_menu(stdscr):
             cursor_x = cursor_x + 1
         elif k == curses.KEY_LEFT:
             cursor_x = cursor_x - 1
+        elif k == curses.KEY_ENTER:
+            histList.append(tempString)
+            tempString = ''
+        elif k>0 and k<=255:
+            tempString += chr(k)
 
         cursor_x = max(0, cursor_x)
         cursor_x = min(width-1, cursor_x)
@@ -42,6 +80,8 @@ def draw_menu(stdscr):
         title = "Curses example"[:width-1]
         subtitle = "Written by Clay McLeod"[:width-1]
         keystr = "Last key pressed: {}".format(k)[:width-1]
+        mstr = "Counter m : {}".format(m)[:width-1]
+        tempStringFormatted = "test {}".format(tempString)
         statusbarstr = "Press 'q' to exit | STATUS BAR | Pos: {}, {}".format(cursor_x, cursor_y)
         if k == 0:
             keystr = "No key press detected..."[:width-1]
@@ -62,6 +102,8 @@ def draw_menu(stdscr):
         stdscr.addstr(height-1, len(statusbarstr), " " * (width - len(statusbarstr) - 1))
         stdscr.attroff(curses.color_pair(3))
 
+        stdscr.addstr(height-2, 0, tempStringFormatted)
+
         # Turning on attributes for title
         stdscr.attron(curses.color_pair(2))
         stdscr.attron(curses.A_BOLD)
@@ -77,13 +119,11 @@ def draw_menu(stdscr):
         stdscr.addstr(start_y + 1, start_x_subtitle, subtitle)
         stdscr.addstr(start_y + 3, (width // 2) - 2, '-' * 4)
         stdscr.addstr(start_y + 5, start_x_keystr, keystr)
+        stdscr.addstr(start_y + 7, start_x_keystr, mstr)
         stdscr.move(cursor_y, cursor_x)
 
         # Refresh the screen
         stdscr.refresh()
-
-        # Wait for next input
-        k = stdscr.getch()
 
 def main():
     curses.wrapper(draw_menu)
