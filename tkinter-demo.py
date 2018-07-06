@@ -51,12 +51,6 @@ class message1:
         self.text_display.insert(tk.END, self.recent_message+'\n')
         self.text_display.see(tk.END)
         self.num_messages += 1
-      #  while self.num_messages > self.h:
-      #      deleted = ''
-      #      while deleted != '\n':
-      #          deleted = self.text_display.get('0.0')
-      #          self.text_display.delete('0.0')
-      #      self.num_messages -= 1
         
 
 root = tk.Tk()
