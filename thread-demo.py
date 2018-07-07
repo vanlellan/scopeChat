@@ -3,7 +3,7 @@ import time
 
 def counter(uniList):	#argument is a list with one element, which will be used as a counter (it's a list to get pass-by-reference behavior)
 	while True:
-		if uniList[0]==-1:	#if counter has been set to zero break loop to kill this thread
+		if uniList[0]==-1:	#if counter has been set to -1 break loop to kill this thread
 			break
 		else:
 			uniList[0] += 1	#increment counter
