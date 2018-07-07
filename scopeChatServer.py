@@ -21,11 +21,11 @@ def clientsBroadcast(aDict, aQ, aKillSwitch):
         aQ.task_done()
 
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-serversocket.bind(('', 8089))
+serversocket.bind(('', 5406))
 serversocket.listen(5) # become a server socket, maximum 5 connections
 
 clientDict = {}
-killSwitch = [False,0]	#first element is killswitch, second is pause
+killSwitch = [False,0]	#first element is killswitch, second is pause (make this a "control dictionary" or "control object")
 q = qu.Queue()
 
 broadcaster = thread.start_new_thread(clientsBroadcast,(clientDict, q, killSwitch))
@@ -35,6 +35,7 @@ print "Ready \n"
 while True:
     connection, address = serversocket.accept()
     newClient = thread.start_new_thread(clientListen,(connection, q, killSwitch))
+    print "Got new client! address = ", address
     while killSwitch[1] != 0:
         print "waiting for unpause..."
         pass
