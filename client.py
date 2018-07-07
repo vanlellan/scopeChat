@@ -16,8 +16,7 @@ def outgoing(clientsocket):
 	clientsocket.close()
 
 clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-#clientsocket.connect(('localhost', 8089))
-clientsocket.connect(('192.168.1.109', 8089))
+clientsocket.connect(('localhost', 8089))
 
 ti = thread.start_new_thread(incoming,(clientsocket,))
 to = thread.start_new_thread(outgoing,(clientsocket,))
