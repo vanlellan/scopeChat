@@ -80,7 +80,7 @@ except IOError:
     print("Creating a default config file...")
     with open('./scopeChat.config', 'wt') as newFile:
         newFile.write("name=anon\n")
-        newFile.write("server=localhost")
+        newFile.write("server=localhost\n")
         newFile.write("port=5406")
     print("...and exiting...")
     sys.exit()
