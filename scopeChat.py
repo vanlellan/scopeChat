@@ -1,14 +1,16 @@
-import Tkinter as tk
+#!/usr/bin/python3
+
+import tkinter as tk
 import time
 import socket
-import thread
-import Queue as qu
+import _thread as th
+import queue as qu
 import sys
 
 def serverListen(aQ, aC, kill):
     while not kill[0]:
         while True:
-            inbound = aC.recv(1024)
+            inbound = aC.recv(1024).decode()
             if len(inbound) > 0:
                 aQ.put(inbound)
         aC.close()
@@ -43,7 +45,8 @@ class message1:
 
     def send_text(self, event):
         newText = self.text_input.get()
-        self.server.send(self.name+": "+newText)
+        data = self.name+": "+newText
+        self.server.send(data.encode())
         if newText == '\\quit':
             self.killer[0] = True
             self.master.destroy()
@@ -66,16 +69,45 @@ class message1:
             self.show_text()
         self.master.after(100, self.check_queue)
 
-if len(sys.argv) > 1:
-    myName = sys.argv[1]
-else:
-    myName = "anon"
+configDict = {}
+try:
+    with open('./scopeChat.config', 'rt') as configFile:
+        for line in configFile:
+            configKey, configValue = line.split('=')
+            configDict[configKey] = configValue.rstrip()
+except IOError:
+    print("There was an error opening the config file!")
+    print("Creating a default config file...")
+    with open('./scopeChat.config', 'wt') as newFile:
+        newFile.write("name=anon\n")
+        newFile.write("server=localhost")
+        newFile.write("port=5406")
+    print("...and exiting...")
+    sys.exit()
+
+try:
+    myName = configDict['name']
+except KeyError:
+    myName = 'anon'
+    print("Default: Setting name to \'"+myName+"\'")
+
+try:
+    serverIP = configDict['server']
+except KeyError:
+    print("Must specify server IP address in scopeChat.config!")
+    sys.exit()
+
+try:
+    myPort = configDict['port']
+except KeyError:
+    myPort = '5406'
+    print("Default: Setting port to \'"+myPort+"\'")
+
 q = qu.Queue()
 fKill = [False,]
 serverconnect = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-serverconnect.connect(('localhost', 8089))
-#serverconnect.connect(('192.168.1.109', 8089))
-serverThread = thread.start_new_thread(serverListen,(q,serverconnect,fKill))
+serverconnect.connect((serverIP, 5406))
+serverThread = th.start_new_thread(serverListen,(q,serverconnect,fKill))
 
 root = tk.Tk()
 my_gui = message1(root, fKill, q, serverconnect, myName)
