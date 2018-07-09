@@ -16,9 +16,8 @@ def serverListen(aQ, aC, kill):
         aC.close()
 
 class message1:
-    def __init__(self, master, killer, bQ, aC, name):
+    def __init__(self, master, bQ, aC, name):
         self.master = master
-        self.killer = killer
         self.bQ = bQ
         self.server = aC
         self.name = name
@@ -45,12 +44,14 @@ class message1:
 
     def send_text(self, event):
         newText = self.text_input.get()
-        data = self.name+": "+newText
-        self.server.send(data.encode())
         if newText == '\\quit':
-            self.killer[0] = True
+            data = self.name+" has left the chat."
+            self.server.send(data.encode())
             self.master.destroy()
-        self.text_input.delete(0, tk.END)
+        else:
+            data = self.name+": "+newText
+            self.server.send(data.encode())
+            self.text_input.delete(0, tk.END)
 
     def show_text(self):
         self.text_display.insert(tk.END, self.recent_message+'\n')
@@ -73,8 +74,9 @@ configDict = {}
 try:
     with open('./scopeChat.config', 'rt') as configFile:
         for line in configFile:
-            configKey, configValue = line.split('=')
-            configDict[configKey] = configValue.rstrip()
+            if line.lstrip()[0] != '#':
+                configKey, configValue = line.split('=')
+                configDict[configKey] = configValue.rstrip()
 except IOError:
     print("There was an error opening the config file!")
     print("Creating a default config file...")
@@ -110,5 +112,5 @@ serverconnect.connect((serverIP, 5406))
 serverThread = th.start_new_thread(serverListen,(q,serverconnect,fKill))
 
 root = tk.Tk()
-my_gui = message1(root, fKill, q, serverconnect, myName)
+my_gui = message1(root, q, serverconnect, myName)
 root.mainloop()
