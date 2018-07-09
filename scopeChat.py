@@ -7,17 +7,10 @@ import _thread as th
 import queue as qu
 import sys
 
-def serverListen(aQ, aC, kill):
-    while not kill[0]:
-        while True:
-            inbound = aC.recv(1024).decode()
-            if len(inbound) > 0:
-                aQ.put(inbound)
-        aC.close()
-
 class message1:
     def __init__(self, master, bQ, aC, name):
         self.master = master
+        self.exit_request = False
         self.bQ = bQ
         self.server = aC
         self.name = name
@@ -42,9 +35,20 @@ class message1:
         self.text_display.update()
         master.after(100,self.check_queue)
 
+        self.serverThread = th.start_new_thread(self.serverListen,tuple())
+
+    def serverListen(self):
+        while not self.exit_request:
+            inbound = self.server.recv(1024).decode()
+            if len(inbound) > 0:
+                self.bQ.put(inbound)
+        print("Got Here Quit")
+        self.server.close()
+
     def send_text(self, event):
         newText = self.text_input.get()
         if newText == '\\quit':
+            self.exit_request = True
             data = self.name+" has left the chat."
             self.server.send(data.encode())
             self.master.destroy()
@@ -106,10 +110,8 @@ except KeyError:
     print("Default: Setting port to \'"+myPort+"\'")
 
 q = qu.Queue()
-fKill = [False,]
 serverconnect = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 serverconnect.connect((serverIP, 5406))
-serverThread = th.start_new_thread(serverListen,(q,serverconnect,fKill))
 
 root = tk.Tk()
 my_gui = message1(root, q, serverconnect, myName)
