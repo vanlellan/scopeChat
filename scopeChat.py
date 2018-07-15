@@ -32,6 +32,12 @@ class message1:
         self.text_input.focus()
         self.text_input.pack(fill='x', expand=True)
 
+        self.button_frame = tk.Frame(self.master)
+        self.button_frame.pack()
+
+        self.quit_button = tk.Button(self.button_frame, text="Quit", fg="red", command=self.quit)
+        self.quit_button.pack()
+
         self.text_display.update()
         master.after(100,self.check_queue)
 
@@ -42,16 +48,18 @@ class message1:
             inbound = self.server.recv(1024).decode()
             if len(inbound) > 0:
                 self.bQ.put(inbound)
-        print("Got Here Quit")
         self.server.close()
+
+    def quit(self):
+        self.exit_request = True
+        data = self.name+" has left the chat."
+        self.server.send(data.encode())
+        self.master.destroy()
 
     def send_text(self, event):
         newText = self.text_input.get()
         if newText == '\\quit':
-            self.exit_request = True
-            data = self.name+" has left the chat."
-            self.server.send(data.encode())
-            self.master.destroy()
+            self.quit()
         else:
             data = self.name+": "+newText
             self.server.send(data.encode())
