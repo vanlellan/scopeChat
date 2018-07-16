@@ -48,13 +48,13 @@ class message1:
             inbound = self.server.recv(1024).decode()
             if len(inbound) > 0:
                 command = inbound.rstrip().split(' ')
-                print("Got Here inbound:  ",command)
+        #        print("Got Here inbound:  ",command)
                 if command[1] == '\\ping':
                     data = self.name+': '+'\\pong'+' '+command[2]
-                    print("Got Here Ping:  "+data)
+        #            print("Got Here Ping:  "+data)
                     self.server.send(data.encode())
                 if command[1] == '\\pong':
-                    print("Got Here Pong:  "+inbound)
+        #            print("Got Here Pong:  "+inbound)
                     pingtime = float(command[2])
                     inbound = inbound+' '+str(time.time())+' '+str(time.time()-pingtime)
                 self.bQ.put(inbound)
