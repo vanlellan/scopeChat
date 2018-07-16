@@ -47,12 +47,14 @@ class message1:
         while not self.exit_request:
             inbound = self.server.recv(1024).decode()
             if len(inbound) > 0:
-                if inbound[:5] == '\\ping':
-                    data = '\\pong'+inbound[5:]
+                command = inbound.rstrip().split(' ')[1]
+                print("Got Here inbound:  "+inbound)
+                if command[1] == '\\ping':
+                    data = self.name+': '+'\\pong'+' '+command[2:]
                     self.server.send(data.encode())
-                if inbound[:5] == '\\pong':
-                    mesg = inbound.rstrip.split(' ')
-                    pingtime = float(mesg[1])
+                if command[1] == '\\pong':
+                    print("Got Here Pong:  "+inbound)
+                    pingtime = float(command[2])
                     inbound = inbound+' '+time.time()+' '+str(time.time()-pingtime)
                 self.bQ.put(inbound)
         self.server.close()
