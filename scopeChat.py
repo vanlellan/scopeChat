@@ -48,7 +48,7 @@ class message1:
             inbound = self.server.recv(1024).decode()
             if len(inbound) > 0:
                 if inbound[:5] == '\\ping':
-                    data = '\pong'+inbound[5:]
+                    data = '\\pong'+inbound[5:]
                     self.server.send(data.encode())
                 if inbound[:5] == '\\pong':
                     mesg = inbound.rstrip.split(' ')
