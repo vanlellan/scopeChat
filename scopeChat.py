@@ -47,6 +47,13 @@ class message1:
         while not self.exit_request:
             inbound = self.server.recv(1024).decode()
             if len(inbound) > 0:
+                if inbound[:5] == '\\ping':
+                    data = '\pong'+inbound[5:]
+                    self.server.send(data.encode())
+                if inbound[:5] == '\\pong':
+                    mesg = inbound.rstrip.split(' ')
+                    pingtime = float(mesg[1])
+                    inbound = inbound+' '+time.time()+' '+str(time.time()-pingtime)
                 self.bQ.put(inbound)
         self.server.close()
 
@@ -61,6 +68,8 @@ class message1:
         if newText == '\\quit':
             self.quit()
         else:
+            if newText == '\\ping':
+                newText = newText+' '+str(time.time())
             data = self.name+": "+newText
             self.server.send(data.encode())
             self.text_input.delete(0, tk.END)
