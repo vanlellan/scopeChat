@@ -5,7 +5,7 @@
 [ ] - add elements for IP and PORT, and a "Connect" button, to GUI
 [ ] - clean up old clients when they disconnect
 [ ] - add license stuff to top of each source file
-
+[ ] - add command to list all connected clients
 
 
 

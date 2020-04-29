@@ -1,4 +1,4 @@
-import Tkinter as tk
+import tkinter as tk
 import time
 
 class MyFirstGUI:
@@ -23,8 +23,8 @@ class message1:
         self.master = master
         self.master.title("Simple Chat Window")
         self.recent_message = ''
-	self.num_messages = 0
-	self.h = 10
+        self.num_messages = 0
+        self.h = 10
         self.w = 90
 
         self.scrollbar = tk.Scrollbar(self.master)
