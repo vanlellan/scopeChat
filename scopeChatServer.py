@@ -21,7 +21,7 @@ def clientsBroadcast(aDict, aQ, aKillSwitch):
         aKillSwitch[1] -= 1
         aQ.task_done()
 
-serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+serversocket = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
 serversocket.bind(('', 5406))
 serversocket.listen(5) # become a server socket, maximum 5 connections
 

@@ -118,7 +118,7 @@ except KeyError:
     print("Default: Setting port to \'"+myPort+"\'")
 
 q = qu.Queue()
-serverconnect = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+serverconnect = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
 serverconnect.connect((serverIP, 5406))
 
 root = tk.Tk()
