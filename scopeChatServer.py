@@ -1,12 +1,14 @@
+#!/usr/bin/python3
+
 import socket
-import thread
-import Queue as qu
+import _thread as th
+import queue as qu
 
 def clientListen(aConnection, aQ):
     while True:
         buf = aConnection.recv(64)
         if buf == '':	#kill thread if empty buffer is sent (usually due to broken connection)
-            print "Client left."
+            print("Client left.")
             break
         aQ.put(buf)
 
@@ -27,15 +29,15 @@ clientDict = {}
 killSwitch = [False,0]	#first element is killswitch (now unused), second is pause (make this a "control dictionary" or "control object")
 q = qu.Queue()
 
-broadcaster = thread.start_new_thread(clientsBroadcast,(clientDict, q, killSwitch))
+broadcaster = th.start_new_thread(clientsBroadcast,(clientDict, q, killSwitch))
 
-print "Ready \n"
+print("Ready \n")
 
 while True:
     connection, address = serversocket.accept()
-    newClient = thread.start_new_thread(clientListen,(connection, q))
-    print "Got new client! address = ", address
+    newClient = th.start_new_thread(clientListen,(connection, q))
+    print("Got new client! address = ", address)
     while killSwitch[1] != 0:
-        print "waiting for unpause..."
+        print("waiting for unpause...")
         pass
     clientDict[newClient] = connection
